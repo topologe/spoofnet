@@ -16,6 +16,8 @@ from utils import save_images
 
 KERNEL_SIZE = 21
 
+NUM_GPU = 1 if torch.cuda.is_available() else 0
+
 
 class AG2Trainer(pl.LightningModule):
     def __init__(self, args, **kwargs):
@@ -189,7 +191,7 @@ if __name__ == '__main__':
     model = AG2Trainer(args)
     tb_logger = pl_loggers.TensorBoardLogger(args['logdir'])
     model_checkpoint = ModelCheckpoint(save_top_k=1)
-    trainer = pl.Trainer(max_epochs=args['num_epochs'], gpus=0, log_every_n_steps=1, logger=tb_logger,
+    trainer = pl.Trainer(max_epochs=args['num_epochs'], gpus=NUM_GPU, log_every_n_steps=1, logger=tb_logger,
                          callbacks=[model_checkpoint])
 
     if args['pretrained'] is None:
