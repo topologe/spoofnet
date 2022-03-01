@@ -4,6 +4,7 @@ import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
 import torch
+import torchvision
 from facenet_pytorch import InceptionResnetV1
 from tqdm import tqdm
 import os
@@ -89,7 +90,7 @@ class AG2Trainer(pl.LightningModule):
         squared_gradient = (1 + gradient) ** 2
         #blurred_gradient = torch.nn.functional.avg_pool2d(squared_gradient, kernel_size=KERNEL_SIZE, stride=1,
         #                                             padding=int(KERNEL_SIZE / 2 - 0.5))
-        blurred_gradient = torch.nn.functional.gaussian_blur(squared_gradient, kernel_size=KERNEL_SIZE)
+        blurred_gradient = torchvision.transforms.functional.gaussian_blur(squared_gradient, kernel_size=KERNEL_SIZE)
 
         # compute the loss
         loss =  2 * torch.pow(torch.mean(torch.abs(img_var - gradient_var)) + 1, 2)
