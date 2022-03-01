@@ -171,13 +171,14 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained', type=str, default=None)
     parser.add_argument('--num_epochs', type=int, default=5)
     parser.add_argument('--padding', type=int, default=1)
+    parser.add_argument('--data_dir', type=str, default='data')
     args = parser.parse_args()
     #args = parser.parse_args(['--visibility_loss'])
     args = vars(args)
     args['logdir'] += f'/layers={args["num_layers"]}_kernel={args["kernel_size"]}_stride={args["stride"]}'
     print(args)
 
-    dataset = ImageDataset()
+    dataset = ImageDataset(args.data_dir)
     train_dataset = copy.deepcopy(dataset)
     val_dataset = copy.deepcopy(dataset)
 

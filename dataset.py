@@ -10,8 +10,8 @@ IMG_SAVE = 'data/cropped_img'
 
 
 class ImageDataset(torch.utils.data.Dataset):
-    def __init__(self):
-        save_fname = 'data/ag2_dataset.pt'
+    def __init__(self, data_path):
+        save_fname = data_path + '/ag2_dataset.pt'
         if os.path.exists(save_fname):
             self.data = torch.load(save_fname)
         else:
