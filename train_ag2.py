@@ -18,9 +18,7 @@ KERNEL_SIZE = 21
 
 
 class AG2Trainer(pl.LightningModule):
-    def __init__(self,
-                 args,
-                 **kwargs):
+    def __init__(self, args, **kwargs):
         super().__init__()
 
         self.args = args
@@ -78,14 +76,24 @@ class AG2Trainer(pl.LightningModule):
         return loss, preds
 
     def get_visibility_loss(self, img, gradient):
+        """blur the image and compute the loss"""
+
         variance_loss_weight = 2
 
         img_var = self.get_pooled_variance(img, kernel_size=KERNEL_SIZE, stride=1)
         gradient_var = self.get_pooled_variance(gradient, kernel_size=KERNEL_SIZE, stride=1)
 
-        loss = variance_loss_weight * torch.pow(torch.mean(torch.abs(img_var - gradient_var)) + 1, 2)
-        loss += torch.pow(torch.mean(torch.abs(gradient)) + 1, 2)
-        loss -= 2
+        # blur the squared gradient
+        squared_gradient = (1 + gradient) ** 2
+        blurred_img = torch.nn.functional.avg_pool2d(squared_gradient, kernel_size=KERNEL_SIZE, stride=1,
+                                                     padding=int(KERNEL_SIZE / 2 - 0.5))
+
+        # compute the loss
+        loss =  2 * torch.pow(torch.mean(torch.abs(img_var - gradient_var)) + 1, 2)
+        loss += 1 * torch.pow(torch.mean(torch.abs(gradient)) + 1, 2)
+        loss += 2 * torch.mean(torch.pow(torch.abs(squared_gradient - blurred_img), 3))
+        loss -= 3
+
         #loss += torch.mean(1 / (torch.abs(gradient) * img_var + 1e-12))
         #loss += torch.mean(torch.abs(gradient))
         #loss += 0.01 * gradient.view(len(gradient), -1).norm(dim=1).mean()
