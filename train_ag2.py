@@ -182,7 +182,7 @@ if __name__ == '__main__':
     args['logdir'] += f'/layers={args["num_layers"]}_kernel={args["kernel_size"]}_stride={args["stride"]}'
     print(args)
 
-    dataset = ImageDataset('data')
+    dataset = ImageDataset(args['data_dir'])
     train_dataset = copy.deepcopy(dataset)
     val_dataset = copy.deepcopy(dataset)
 
