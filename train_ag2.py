@@ -95,7 +95,7 @@ class AG2Trainer(pl.LightningModule):
         # compute the loss
         loss =  2 * torch.pow(torch.mean(torch.abs(img_var - gradient_var)) + 1, 2)
         loss += 1 * torch.pow(torch.mean(torch.abs(gradient)) + 1, 2)
-        loss += 2 * torch.mean(torch.pow(torch.abs(squared_gradient - blurred_gradient), 3))
+        loss += 4 * torch.mean(torch.pow(torch.abs(squared_gradient - blurred_gradient), 3))
         loss -= 3
 
         #loss += torch.mean(1 / (torch.abs(gradient) * img_var + 1e-12))
@@ -177,12 +177,12 @@ if __name__ == '__main__':
     parser.add_argument('--padding', type=int, default=1)
     parser.add_argument('--data_dir', type=str, default='data')
     args = parser.parse_args()
-    #args = parser.parse_args(['--visibility_loss'])
-    args = vars(args)
+    args = parser.parse_args(['--visibility_loss'])
+    #args = vars(args)
     args['logdir'] += f'/layers={args["num_layers"]}_kernel={args["kernel_size"]}_stride={args["stride"]}'
     print(args)
 
-    dataset = ImageDataset(args['data_dir'])
+    dataset = ImageDataset('data')
     train_dataset = copy.deepcopy(dataset)
     val_dataset = copy.deepcopy(dataset)
 
