@@ -88,9 +88,10 @@ class AG2Trainer(pl.LightningModule):
 
         # blur the squared gradient
         squared_gradient = (1 + gradient) ** 2
+        sigma = 2 * (0.3 * ((KERNEL_SIZE - 1) * 0.5 - 1) + 0.8)
         #blurred_gradient = torch.nn.functional.avg_pool2d(squared_gradient, kernel_size=KERNEL_SIZE, stride=1,
         #                                             padding=int(KERNEL_SIZE / 2 - 0.5))
-        blurred_gradient = torchvision.transforms.functional.gaussian_blur(squared_gradient, kernel_size=KERNEL_SIZE)
+        blurred_gradient = torchvision.transforms.functional.gaussian_blur(squared_gradient, kernel_size=KERNEL_SIZE, sigma=sigma)
 
         # compute the loss
         loss =  2 * torch.pow(torch.mean(torch.abs(img_var - gradient_var)) + 1, 2)
