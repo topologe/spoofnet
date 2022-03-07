@@ -1,5 +1,5 @@
 import copy
-from dataset import ImageDataset
+from dataset import ImageDataset, IMG_SOURCE
 import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -11,6 +11,7 @@ import os
 from sklearn.model_selection import train_test_split
 import argparse
 import json
+from PIL import Image
 
 from AG2.model import AG2Config, AG2
 from utils import save_images
@@ -151,7 +152,8 @@ def evaluate(model, dataloader, log_dir):
         for i in range(len(img)):
             spoofed = 'no' if correct_array[i] else 'yes'
             fname = save_dir + f'/{name[i]}_{image_num[i]}_{spoofed}.jpg'
-            save_images(img[i], generated_gradient[i], fake_image[i], img_var[i], grad_var[i], fname)
+            original_image = Image.open(f'{IMG_SOURCE}/{name[i]}/{name[i]}_{str(image_num[i].item()).zfill(4)}.jpg')
+            save_images(img[i], generated_gradient[i], fake_image[i], img_var[i], grad_var[i], original_image, fname)
 
     acc = {'accuracy': f'{correct / total:.5f}'}
     print(acc)
