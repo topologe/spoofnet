@@ -96,7 +96,7 @@ class AG2Trainer(pl.LightningModule):
 
         # compute the loss
         loss =  2 * torch.pow(torch.mean(torch.abs(img_var - gradient_var)) + 1, 2)
-        loss += 1 * torch.pow(torch.mean(torch.abs(gradient)) + 1, 2)
+        loss += 1 * torch.pow(torch.mean(torch.abs(gradient+1)) + 1, 2)
         loss += 4 * torch.mean(torch.pow(torch.abs(squared_gradient - blurred_gradient), 3))
         loss -= 3
 
