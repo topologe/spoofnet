@@ -1,5 +1,5 @@
 import copy
-from dataset import ImageDataset, IMG_SOURCE
+from dataset import ImageDataset
 import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -127,7 +127,7 @@ class AG2Trainer(pl.LightningModule):
         self.log("val_acc", accuracy)
 
 
-def evaluate(model, dataloader, log_dir):
+def evaluate(args, model, dataloader, log_dir):
     correct = 0.0
     total = 0.0
     for batch in tqdm(dataloader):
@@ -152,7 +152,7 @@ def evaluate(model, dataloader, log_dir):
         for i in range(len(img)):
             spoofed = 'no' if correct_array[i] else 'yes'
             fname = save_dir + f'/{name[i]}_{image_num[i]}_{spoofed}.jpg'
-            original_image = Image.open(f'{IMG_SOURCE}/{name[i]}/{name[i]}_{str(image_num[i].item()).zfill(4)}.jpg')
+            original_image = Image.open(f'{args["data_dir"]}/lfw/{name[i]}/{name[i]}_{str(image_num[i].item()).zfill(4)}.jpg')
             save_images(img[i], generated_gradient[i], fake_image[i], img_var[i], grad_var[i], original_image, fname)
 
     acc = {'accuracy': f'{correct / total:.5f}'}
@@ -204,4 +204,4 @@ if __name__ == '__main__':
     else:
         trainer.fit(model, train_dataloader, val_dataloader, ckpt_path=args['pretrained'])
 
-    evaluate(model, val_dataloader, trainer.logger.log_dir)
+    evaluate(args, model, val_dataloader, trainer.logger.log_dir)
