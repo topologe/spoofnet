@@ -88,16 +88,18 @@ class AG2Trainer(pl.LightningModule):
         gradient_var = self.get_pooled_variance(gradient, kernel_size=KERNEL_SIZE, stride=1)
 
         # blur the squared gradient
-        squared_gradient = (1 + gradient) ** 2
-        sigma = 2 * (0.3 * ((KERNEL_SIZE - 1) * 0.5 - 1) + 0.8)
+        #squared_gradient = (1 + gradient) ** 2
+        #sigma = 2 * (0.3 * ((KERNEL_SIZE - 1) * 0.5 - 1) + 0.8)
         #blurred_gradient = torch.nn.functional.avg_pool2d(squared_gradient, kernel_size=KERNEL_SIZE, stride=1,
         #                                             padding=int(KERNEL_SIZE / 2 - 0.5))
-        blurred_gradient = torchvision.transforms.functional.gaussian_blur(squared_gradient, kernel_size=KERNEL_SIZE, sigma=sigma)
+        # SAVE THIS
+        #blurred_gradient = torchvision.transforms.functional.gaussian_blur(squared_gradient, kernel_size=KERNEL_SIZE, sigma=sigma)
 
         # compute the loss
-        loss =  2 * torch.pow(torch.mean(torch.abs(img_var - gradient_var)) + 1, 2)
-        loss += 1 * torch.pow(torch.mean(torch.abs(gradient+1)) + 1, 2)
-        loss += 4 * torch.mean(torch.pow(torch.abs(squared_gradient - blurred_gradient), 3))
+        loss =  1 * torch.pow(torch.mean(torch.abs(img_var - gradient_var)) + 1, 2)
+        loss += 1 * torch.pow(torch.mean(torch.abs(gradient)) + 1, 2)
+        #loss += 4 * torch.mean(torch.pow(torch.abs(squared_gradient - blurred_gradient), 3))
+        loss += 1 * torch.pow(torch.max(gradient_var) + 1, 2)
         loss -= 3
 
         #loss += torch.mean(1 / (torch.abs(gradient) * img_var + 1e-12))
