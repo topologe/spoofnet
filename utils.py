@@ -32,11 +32,11 @@ def save_images(img, gradient, fake_image, img_var, grad_var, original_image, fn
 def prep_image(x, mode=None):
     if mode == 'pos_grad':
         x -= 1
-        x[x < -1] = -1
+        x = x.clip(min=-1)
     elif mode == 'neg_grad':
         x *= -1
         x -= 1
-        x[x < -1] = -1
+        x = x.clip(min=-1)
     elif mode == 'var':
         x -= 1
 
