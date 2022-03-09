@@ -158,9 +158,9 @@ def evaluate(args, model, dataloader, log_dir):
             original_image = Image.open(f'{args["data_dir"]}/lfw/{name[i]}/{name[i]}_{str(image_num[i].item()).zfill(4)}.jpg')
             save_images(img[i], generated_gradient[i], fake_image[i], img_var[i], grad_var[i], original_image, fname)
 
-        cache['img_var'].append(img_var)
-        cache['gradient_var'].append(grad_var)
-        cache['gradient'].append(generated_gradient)
+        cache['img_var'].append(img_var.detach().cpu())
+        cache['gradient_var'].append(grad_var.detach().cpu())
+        cache['gradient'].append(generated_gradient.detach().cpu())
 
     acc = {'accuracy': f'{correct / total:.5f}'}
     print(acc)
