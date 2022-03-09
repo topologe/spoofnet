@@ -4,9 +4,15 @@ import numpy as np
 
 
 def save_images(img, gradient, fake_image, img_var, grad_var, original_image, fname):
-    negative_gradient = -gradient
-    images = [prep_image(x) for x in [img, img_var, gradient, negative_gradient, grad_var, fake_image]]
-    images += [original_image, reproject_face(original_image, fake_image)]
+    images = [prep_image(img),
+              prep_image(img_var, 'var'),
+              prep_image(gradient, 'pos_grad'),
+              prep_image(gradient, 'neg_grad'),
+              prep_image(grad_var, 'var'),
+              prep_image(fake_image),
+              original_image,
+              reproject_face(original_image, fake_image)
+              ]
 
     widths, heights = zip(*(i.size for i in images))
 
@@ -23,7 +29,17 @@ def save_images(img, gradient, fake_image, img_var, grad_var, original_image, fn
     new_im.save(fname)
 
 
-def prep_image(x):
+def prep_image(x, mode=None):
+    if mode == 'pos_grad':
+        x -= 1
+        x[x < -1] = -1
+    elif mode == 'neg_grad':
+        x *= -1
+        x -= 1
+        x[x < -1] = -1
+    elif mode == 'var':
+        x -= 1
+
     x = x * 128 + 127.5
     x = x.permute(1, 2, 0)
     x = x.cpu().detach().numpy()
