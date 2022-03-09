@@ -132,6 +132,7 @@ class AG2Trainer(pl.LightningModule):
 def evaluate(args, model, dataloader, log_dir):
     correct = 0.0
     total = 0.0
+    cache = {'img_var': [], 'gradient_var': [], 'gradient': []}
     for batch in tqdm(dataloader):
         img, name, image_num, label = batch
         img = img.to(model.device)
@@ -157,9 +158,18 @@ def evaluate(args, model, dataloader, log_dir):
             original_image = Image.open(f'{args["data_dir"]}/lfw/{name[i]}/{name[i]}_{str(image_num[i].item()).zfill(4)}.jpg')
             save_images(img[i], generated_gradient[i], fake_image[i], img_var[i], grad_var[i], original_image, fname)
 
+        cache['img_var'].append(img_var)
+        cache['gradient_var'].append(grad_var)
+        cache['gradient'].append(generated_gradient)
+
     acc = {'accuracy': f'{correct / total:.5f}'}
     print(acc)
     json.dump(acc, open(log_dir + '/accuracy.json', 'w'))
+
+    cache['img_var'] = torch.cat(cache['img_var'], dim=0)
+    cache['gradient_var'] = torch.cat(cache['gradient_var'], dim=0)
+    cache['gradient'] = torch.cat(cache['gradient'], dim=0)
+    torch.save(cache, log_dir + '/cache.pt')
 
 
 if __name__ == '__main__':
