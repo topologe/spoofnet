@@ -4,10 +4,11 @@ import numpy as np
 
 
 def save_images(img, gradient, fake_image, img_var, grad_var, original_image, fname):
+    negative_gradient = -gradient
     images = [prep_image(img),
               prep_image(img_var, 'var'),
               prep_image(gradient, 'grad'),
-              prep_image(-gradient, 'grad'),
+              prep_image(negative_gradient, 'grad'),
               prep_image(grad_var, 'var'),
               prep_image(fake_image),
               original_image,
