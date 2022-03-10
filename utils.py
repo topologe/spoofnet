@@ -6,8 +6,8 @@ import numpy as np
 def save_images(img, gradient, fake_image, img_var, grad_var, original_image, fname):
     images = [prep_image(img),
               prep_image(img_var, 'var'),
-              prep_image(gradient, 'pos_grad'),
-              prep_image(gradient, 'neg_grad'),
+              prep_image(gradient, 'grad'),
+              prep_image(-gradient, 'grad'),
               prep_image(grad_var, 'var'),
               prep_image(fake_image),
               original_image,
@@ -30,11 +30,7 @@ def save_images(img, gradient, fake_image, img_var, grad_var, original_image, fn
 
 
 def prep_image(x, mode=None):
-    if mode == 'pos_grad':
-        x -= 1
-        x = x.clip(min=-1)
-    elif mode == 'neg_grad':
-        x *= -1
+    if mode == 'grad':
         x -= 1
         x = x.clip(min=-1)
     elif mode == 'var':
