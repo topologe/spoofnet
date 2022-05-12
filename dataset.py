@@ -13,9 +13,13 @@ class ImageDataset(torch.utils.data.Dataset):
     def __init__(self, data_path):
         save_fname = data_path + '/ag2_dataset.pt'
         if os.path.exists(save_fname):
+            # load existing dataset if exists
             self.data = torch.load(save_fname)
         else:
+            # create new dataset for training
+            # load the labels used in the Facenet-vggface2 Resnet model
             labels = pd.read_csv('data/lfw/labels-vggface2.csv')
+            # load list of images resnet predicts correctly. We want to ensure we only training on these images.
             df = pd.read_csv('utils/lfw_correct_images.txt')
             name_to_num = {v: k for k, v in labels.Name.to_dict().items()}
             df['label'] = df.name.map(name_to_num)

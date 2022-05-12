@@ -81,4 +81,3 @@ class AG2(nn.Module):
         x = self.encoder(x)
         x = self.decoder(x)
         return x
-
